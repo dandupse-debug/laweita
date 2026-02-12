@@ -2,41 +2,17 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>REGALO_LAWEITA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA_LAWEITA</title>
     <style>
-        body { 
-            background: #000; 
-            color: #fff; 
-            font-family: sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            min-height: 100vh; 
-            margin: 0; 
-            padding: 20px;
-        }
-        img { 
-            max-width: 100%; 
-            max-height: 70vh; /* La imagen no ocupará más del 70% de la pantalla */
-            border: 3px solid #00ff41; 
-            border-radius: 15px; 
-            box-shadow: 0 0 20px #00ff41;
-            object-fit: contain;
-        }
-        .mensaje { 
-            margin-top: 20px; 
-            font-size: 1.5rem; 
-            text-align: center; 
-            color: #00ff41; 
-            font-weight: bold;
-            text-transform: uppercase;
-        }
+        body { background: #000; color: #00ff41; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 10px; }
+        /* Esto arregla el tamaño gigante de la imagen */
+        img { max-width: 90%; max-height: 60vh; border: 2px solid #00ff41; border-radius: 10px; box-shadow: 0 0 15px #00ff41; object-fit: contain; }
+        .mensaje { margin-top: 20px; font-size: 1.5rem; text-align: center; color: #fff; text-shadow: 0 0 5px #00ff41; }
     </style>
 </head>
 <body>
     <div id="pantalla">Cargando...</div>
-
     <script>
         window.onload = function() {
             const hash = window.location.hash.substring(1);
@@ -44,13 +20,12 @@
                 const partes = hash.split('|');
                 const urlImg = decodeURIComponent(partes[0]);
                 const texto = decodeURIComponent(partes[1] || "¡Sorpresa!");
-                
                 document.getElementById('pantalla').innerHTML = `
                     <img src="${urlImg}">
                     <div class="mensaje">${texto}</div>
                 `;
             } else {
-                document.getElementById('pantalla').innerText = "ERROR: LINK VACÍO";
+                document.getElementById('pantalla').innerText = "LINK SIN DATOS";
             }
         };
     </script>
