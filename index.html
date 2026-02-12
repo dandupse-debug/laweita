@@ -2,67 +2,29 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA_LAWEITA_PRIVADO</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <title>SISTEMA_LAWEITA_V3</title>
     <style>
         body { background: #050505; color: #00ff41; font-family: 'Courier New', monospace; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { border: 1px solid #00ff41; padding: 20px; border-radius: 5px; box-shadow: 0 0 15px #00ff4133; text-align: center; max-width: 90%; }
-        #output { margin-top: 20px; }
-        img { max-width: 100%; border-radius: 10px; border: 2px solid #00ff41; margin-top: 10px; }
-        .status { font-size: 0.7rem; color: #008f11; margin-bottom: 10px; }
+        .container { border: 1px solid #00ff41; padding: 20px; border-radius: 10px; box-shadow: 0 0 20px #00ff4155; text-align: center; max-width: 90%; }
+        img { max-width: 100%; border-radius: 8px; border: 2px solid #00ff41; margin-bottom: 15px; display: block; }
+        .texto-mensaje { font-size: 1.2rem; font-weight: bold; color: #fff; text-shadow: 0 0 5px #00ff41; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>SISTEMA_LAWEITA_V2</h2>
-        <div id="status" class="status">ESPERANDO PAQUETE...</div>
-        <div id="output"></div>
+        <div id="contenido">Cargando datos...</div>
     </div>
-
     <script>
         window.onload = function() {
             const hash = window.location.hash.substring(1);
             if (!hash) return;
-            try {
-                const parts = hash.split('|');
-                const bytes = CryptoJS.AES.decrypt(decodeURIComponent(parts[0]), decodeURIComponent(parts[1]));
-                const content = bytes.toString(CryptoJS.enc.Utf8);
-                
-                if (!content) throw new Error();
-                
-                const output = document.getElementById('output');
-                // Si el contenido empieza con http, mostramos una imagen
-                if (content.match(/\.(jpeg|jpg|gif|png|webp)$/) != null || content.startsWith('http')) {
-                    output.innerHTML = `<img src="${content}" alt="Mensaje Visual">`;
-                } else {
-                    output.innerText = content;
-                }
-                document.getElementById('status').innerText = "ARCHIVO DESCIFRADO";
-            } catch (e) {
-                document.getElementById('output').innerText = "ERROR: PAQUETE CORRUPTO";
-            }
-        };
-    </script>
-</body>
-</html>
-            const hash = window.location.hash.substring(1);
-            if (!hash) return;
-            try {
-                const parts = hash.split('|');
-                const encryptedMsg = decodeURIComponent(parts[0]);
-                const password = decodeURIComponent(parts[1]);
-                
-                const bytes = CryptoJS.AES.decrypt(encryptedMsg, password);
-                const originalText = bytes.toString(CryptoJS.enc.Utf8);
-                
-                if (!originalText) throw new Error();
-                
-                document.getElementById('output').innerText = originalText;
-                document.getElementById('status').innerText = "ACCESO CONCEDIDO - MENSAJE DESCIFRADO";
-            } catch (e) {
-                document.getElementById('output').style.color = "red";
-                document.getElementById('output').innerText = "ERROR: CLAVE O MENSAJE INVÁLIDO";
-            }
+            const parts = hash.split('|');
+            const imgUrl = decodeURIComponent(parts[0]);
+            const texto = decodeURIComponent(parts[1] || "");
+            document.getElementById('contenido').innerHTML = `
+                <img src="${imgUrl}" alt="Sorpresa">
+                <div class="texto-mensaje">${texto}</div>
+            `;
         };
     </script>
 </body>
