@@ -1,36 +1,38 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>SISTEMA LAWEITA</title>
     <style>
-        body { background: #000; color: #00ff41; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; }
-        .tarjeta { border: 2px solid #00ff41; padding: 20px; border-radius: 15px; text-align: center; max-width: 450px; background: #050505; box-shadow: 0 0 25px #00ff41; }
-        img { max-width: 100%; max-height: 50vh; border-radius: 10px; border: 1px solid #00ff41; margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto; }
-        .mensaje { font-size: 1.8rem; color: #fff; text-shadow: 0 0 10px #00ff41; font-weight: bold; margin-top: 10px; }
+        body { 
+            margin: 0; padding: 0; 
+            display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; 
+            height: 100vh; overflow: hidden;
+            font-family: 'Consolas', monospace;
+        }
+        img { max-width: 80%; max-height: 60%; border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        #mensaje { margin-top: 20px; font-size: 24px; font-weight: bold; text-align: center; padding: 20px; }
     </style>
 </head>
-<body>
-    <div class="tarjeta" id="contenedor">CARGANDO...</div>
+<body id="cuerpo">
+    <img id="foto" src="" alt="Cargando...">
+    <div id="mensaje"></div>
+
     <script>
-        window.onload = function() {
-            // Leemos el link después del #
-            const hash = decodeURIComponent(window.location.hash.substring(1));
+        // Formato esperado: #FOTO*MSG*BG*TXT
+        const hash = decodeURIComponent(window.location.hash.substring(1));
+        const partes = hash.split('*');
+
+        if (partes.length >= 2) {
+            document.getElementById('foto').src = partes[0];
+            document.getElementById('mensaje').innerText = partes[1];
             
-            // Si el link tiene un asterisco, separamos imagen y texto
-            if (hash.includes('*')) {
-                const partes = hash.split('*');
-                const urlImg = partes[0];
-                const textoMensaje = partes[1];
-                
-                document.getElementById('contenedor').innerHTML = `
-                    <img src="${urlImg}">
-                    <div class="mensaje">${textoMensaje}</div>
-                `;
-            } else {
-                document.getElementById('contenedor').innerText = "ERROR: USA EL GENERADOR DE PYTHON";
-            }
-        };
+            // Si vienen colores en el link, los aplicamos
+            if (partes[2]) document.getElementById('cuerpo').style.backgroundColor = '#' + partes[2];
+            if (partes[3]) document.getElementById('mensaje').style.color = '#' + partes[3];
+        } else {
+            document.body.innerHTML = "<h1>ERROR: USA EL GENERADOR DE PYTHON</h1>";
+        }
     </script>
 </body>
 </html>
